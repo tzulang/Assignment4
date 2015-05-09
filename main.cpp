@@ -176,14 +176,20 @@ void initLight()
 
 	//glEnable(GL_COLOR_MATERIAL);
 	
+	glShadeModel(GL_FLAT);
+	glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHT0);
+	glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE);
+	glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
+	glColorMaterial(GL_BACK, GL_AMBIENT_AND_DIFFUSE);
 
-	GLfloat emission[] = { 0, 0, 0.2 };
+	//GLfloat emission[] = { 0, 0, 0.2 };
 	GLfloat light_direction[] = { 0.0, -0.0, -1.0, 1.0 };
 	GLfloat light_ambient[] =	{ 0.5,  0.5,  0.5, 1.0 }; //color
 	GLfloat light_diffuse[] =	{ 0.0,  0.5,  0.5, 1.0 }; //color
 	GLfloat light_specular[] =	{ 0.0,  0.0,  0.5, 1.0 };
-	GLfloat light_position[] =	{ -0.0, 0, -1, 0, 0.0 };
-	GLfloat angle[] = { 20.0 };
+	GLfloat light_position[] =	{ -0.0,  -1, -1, 0, 0.0 };
+	//GLfloat angle[] = { 20.0 };
 
 
 	glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
@@ -194,16 +200,13 @@ void initLight()
 //	glLightfv(GL_LIGHT0, GL_SPOT_DIRECTION, light_direction);
 //	glLightfv(GL_LIGHT0, GL_SPOT_CUTOFF,angle);
 
-	glShadeModel(GL_FLAT);
-	glEnable(GL_LIGHTING);
-	glEnable(GL_LIGHT0);
-	glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE);
-	glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
+	
+	
 
-	GLfloat mat_a[] = { 0.3, 0.4, 0.5, 1.0 };
-	GLfloat mat_d[] = { 0.0, 0.6, 0.7, 1.0 };
-	GLfloat mat_s[] = { 0.0, 0.0, 0.8, 1.0 };
-	GLfloat low_sh[] = { 5.0 };
+	GLfloat mat_a[] = { 0.3, 0.4, 0.3, 1.0 };
+	GLfloat mat_d[] = { 0.7, 0.6, 0.7, 1.0 };
+	GLfloat mat_s[] = { 0.5, 0.0, 0.8, 1.0 };
+	GLfloat low_sh[] = { 5 };
 
 	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, mat_a);
 	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, mat_d);
@@ -265,8 +268,8 @@ void drawObj(){
 
 	int objectNum = objects.size();
 	
-	glEnable(GL_LIGHTING);
-	glEnable(GL_COLOR_MATERIAL);
+	//glEnable(GL_LIGHTING);
+	//glDisable(GL_COLOR_MATERIAL);
 	
 	for (size_t o = 0; o < objectNum; o++){
 
@@ -275,9 +278,9 @@ void drawObj(){
 		for (size_t g = 0; g < groupNum; g++ ){
 			vector<Face> *faces = objects[o]->groups->at(g)->faces;
 			int facesNum = faces->size();		
-			glPushMatrix();
+			//glPushMatrix();
 			glBegin(GL_TRIANGLES);
-		
+			//glColor3f(0.3f, 0.5f, 0.13f);
 			for (int f=0; f < facesNum; f++){
 				
 				Face *face = &faces->at(f);
@@ -286,17 +289,20 @@ void drawObj(){
 					int n = face->normal[i]-1;
 					int v = face->vertice[i]-1;
 					float f = float(i) / facesNum;
-					glColor3f(f, f*2, f);
+					//glColor3f(f, f*2, f);
+					Vector3f nn= normals[n];
+					Vector3f vv= vertices[v];
 					glNormal3f(normals[n].x, normals[n].y, normals[n].z);
 					glVertex3f(vertices[v].x, vertices[v].y, vertices[v].z);
 				}
 			}
 			glEnd();
-			glPopMatrix();
+		//	glPopMatrix();
 		}
 
 	}
-	glEnable(GL_LIGHTING);
+//	glEnable(GL_LIGHTING);
+//	glDisable(GL_COLOR_MATERIAL); 
 	//glFlush();
 }
 
@@ -306,7 +312,7 @@ void mydisplay()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //clear back buffer	
 
  
-	glRotatef(0.1, 0, 0, 0); //rotate scene
+	glRotatef(0.1, 0, 1,0 ); //rotate scene
 	drawObj();
  
 
@@ -333,6 +339,7 @@ int main(int  argc, char** argv)
  
 	 
 	init();
+	initLight();
 	ParseFile("simple.obj");
 	glutDisplayFunc(mydisplay);
 	glutTimerFunc(2, disp, 1);
