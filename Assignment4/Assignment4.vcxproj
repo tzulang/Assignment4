@@ -68,12 +68,21 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="CameraMode.h" />
+    <ClInclude Include="GlobalMode.h" />
+    <ClInclude Include="main.h" />
     <ClInclude Include="ObjectParser.h" />
+    <ClInclude Include="Scene.h" />
+    <ClInclude Include="State.h" />
     <ClInclude Include="Vector3f.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CameraMode.cpp" />
+    <ClCompile Include="GlobalMode.cpp" />
     <ClCompile Include="ObjectParser.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Scene.cpp" />
+    <ClCompile Include="State.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

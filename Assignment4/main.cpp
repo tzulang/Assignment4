@@ -8,33 +8,30 @@
 #include "glut.h"
 #include "Vector3f.h"
 #include "ObjectParser.h"
+#include "Scene.h"
+#include "State.h"
+#include "GlobalMode.h"
+#include "CameraMode.h"
+
+#define W_WIDTH 512
+
+#define W_HEIGHT 512
+
+
+
+
 
 using namespace std;
 
-
- 
-
-typedef struct Face{
-	GLuint vertice[3];
-	GLuint normal [3];
-};
-
-typedef struct Group{
-
-	int name;
-	vector<Face> *faces;
-};
-
-typedef struct object3D{ 
-	int name;
-	vector<Group*> *groups;
-};
-
-static vector<Vector3f> vertices;
-static vector<Vector3f> normals;
-static vector<object3D*> objects;
+ GLfloat rot;
+ Scene scene;
 
 
+GlobalMode GlobalState(scene);
+
+CameraMode CameraState(scene);
+
+State * Scanetate = &CameraState;
 
 vector<string> &split(const string &s, char delim, std::vector<string> &elems, bool ignoreEmpty) {
 
@@ -106,7 +103,7 @@ void ParseFile(string fileName){
 			currentObject = (object3D*)malloc(sizeof (object3D));
 			currentObject->name = (params.size() > 1) ? stoi(params[1]) : -1;
 			currentObject->groups = new vector<Group*>();
-			objects.push_back(currentObject);
+			scene.objects.push_back(currentObject);
 			continue;
 		}
 
@@ -115,7 +112,7 @@ void ParseFile(string fileName){
 				currentObject = (object3D*)malloc(sizeof (object3D));
 				currentObject->name = -1;
 				currentObject->groups = new vector<Group*>();
-				objects.push_back(currentObject);
+				scene.objects.push_back(currentObject);
 			}
 
 			currentGroup = (Group*)malloc(sizeof (Group));
@@ -131,11 +128,11 @@ void ParseFile(string fileName){
 			continue;
 		}
 		if (params[0] == "v"){
-			vertices.push_back(parseVec(params));
+			scene.vertices.push_back(parseVec(params));
 			continue;
 		}
 		if (params[0] == "vn"){
-			normals.push_back(parseVec(params));
+			scene.normals.push_back(parseVec(params));
 			continue;
 
 		}
@@ -162,6 +159,7 @@ void init()
  
 	
 	glEnable(GL_DEPTH_TEST);  //define in which order the scene will built
+	//glEnable(GL_NORMALIZE);
 
 	/* return to modelview mode */
 	glMatrixMode(GL_MODELVIEW);
@@ -176,7 +174,7 @@ void initLight()
 
 	//glEnable(GL_COLOR_MATERIAL);
 	
-	glShadeModel(GL_FLAT);
+	glShadeModel(GL_SMOOTH);
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
 	glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE);
@@ -266,17 +264,17 @@ void printProj() //prints projection matrix
 
 void drawObj(){
 
-	int objectNum = objects.size();
+	int objectNum = scene.objects.size();
 	
 	//glEnable(GL_LIGHTING);
 	//glDisable(GL_COLOR_MATERIAL);
 	
 	for (size_t o = 0; o < objectNum; o++){
 
-		int groupNum = objects[o]->groups->size();
+		int groupNum = scene.objects[o]->groups->size();
 		
 		for (size_t g = 0; g < groupNum; g++ ){
-			vector<Face> *faces = objects[o]->groups->at(g)->faces;
+			vector<Face> *faces = scene.objects[o]->groups->at(g)->faces;
 			int facesNum = faces->size();		
 			//glPushMatrix();
 			glBegin(GL_TRIANGLES);
@@ -290,10 +288,10 @@ void drawObj(){
 					int v = face->vertice[i]-1;
 					float f = float(i) / facesNum;
 					//glColor3f(f, f*2, f);
-					Vector3f nn= normals[n];
-					Vector3f vv= vertices[v];
-					glNormal3f(normals[n].x, normals[n].y, normals[n].z);
-					glVertex3f(vertices[v].x, vertices[v].y, vertices[v].z);
+					Vector3f nn= scene.normals[n];
+					Vector3f vv= scene.vertices[v];
+					glNormal3f(scene.normals[n].x, scene.normals[n].y, scene.normals[n].z);
+					glVertex3f(scene.vertices[v].x, scene.vertices[v].y, scene.vertices[v].z);
 				}
 			}
 			glEnd();
@@ -329,19 +327,78 @@ void disp(int value)
 
 }
 
+void mouseCamera(int button, int state, int x, int y) {
+	
+}
+void mouseGlobal(int button, int state, int x, int y) {
+	switch (button) {
+	  case GLUT_LEFT_BUTTON:
+		  rot=0;
+		  break;
+	  case GLUT_RIGHT_BUTTON:
+		  if(rot==0)
+			  if(x>y)
+				rot=0.01;
+			  else rot=-0.01;
+		  else (rot+=rot);
+		  break;
+	  case GLUT_MIDDLE_BUTTON:
+		  break;
+   }
+}
+
+void mouseMotion(int x, int y){
+	Scanetate->mouseMotion(x,y);
+	/*
+	float angelY =((W_HEIGHT-y)/W_HEIGHT)*180;
+	float angelX =((W_WIDTH-x)/W_WIDTH)*180;
+	*/
+
+}
+
+
+void mouse(int button, int state, int x, int y) 
+{
+	Scanetate->mouse(button, state, x, y);
+	/*
+	scene.Buttom = button;
+	scene.pressLocation.x = x;
+	scene.pressLocation.y = y;
+	*/
+	/*
+   switch (button) {
+	  case GLUT_LEFT_BUTTON:
+		  rot=0;
+		  break;
+	  case GLUT_RIGHT_BUTTON:
+		  if(rot==0)
+			  if(x>y)
+				rot=0.01;
+			  else rot=-0.01;
+		  else (rot+=rot);
+		  break;
+	  case GLUT_MIDDLE_BUTTON:
+		  break;
+   }
+   */
+}
+
+
 int main(int  argc, char** argv)
 {
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
-	glutInitWindowSize(512, 512);
+	glutInitWindowSize(W_WIDTH, W_HEIGHT);
 	glutCreateWindow("Ass 4");
 
- 
+	
 	 
 	init();
 	initLight();
-	ParseFile("simple.obj");
+	ParseFile("doll.obj");
 	glutDisplayFunc(mydisplay);
+	glutMouseFunc(mouse);
+	glutMotionFunc(mouseMotion);
 	glutTimerFunc(2, disp, 1);
 	
 	glutMainLoop();
