@@ -310,7 +310,12 @@ void mydisplay()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //clear back buffer	
 
  
-	glRotatef(0.1, 0, 1,0 ); //rotate scene
+	//glRotatef(0.1, 0, 1,0 ); //rotate scene
+	glLoadIdentity();
+	glTranslatef(scene.SceneLocation.x + scene.SceneDelta.x,
+				scene.SceneLocation.y+ scene.SceneDelta.y,
+				scene.SceneLocation.z+ scene.SceneDelta.z);
+
 	drawObj();
  
 
@@ -395,7 +400,7 @@ int main(int  argc, char** argv)
 	 
 	init();
 	initLight();
-	ParseFile("doll.obj");
+	ParseFile("simple.obj");
 	glutDisplayFunc(mydisplay);
 	glutMouseFunc(mouse);
 	glutMotionFunc(mouseMotion);

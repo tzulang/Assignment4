@@ -39,7 +39,10 @@ public:
 
 	 int Buttom;
 
-	 Point pressLocation;
+	 Vector3f SceneLocation;
+	 Vector3f SceneDelta;
+	 Vector3f RotateLocation;
+	 Vector3f RotateDelta;
 
 	Scene(void);
 	~Scene(void);
