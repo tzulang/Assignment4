@@ -2,9 +2,9 @@
 
 static int pressX=0;
 static int pressY=0;
-int pressState = 0;
+static int pressState = 0;
 
-Vector3f zeroVec(0,0,0);
+static Vector3f zeroVec(0,0,0);
 
 void CameraMode::mouse(int button, int state, int x, int y){
 	switch (button) {
@@ -27,20 +27,20 @@ void CameraMode::mouse(int button, int state, int x, int y){
 
 			break;
 	}
-	this->scene.SceneLocation+= this->scene.SceneDelta;
+	this->scene.CameraLocation+= this->scene.CameraLocDelta;
 
-	this->scene.SceneDelta = zeroVec;
+	this->scene.CameraLocDelta = zeroVec;
 
 	
 
 }
 void CameraMode::mouseMotion(int x, int y){
 	if(pressState == GLUT_RIGHT_BUTTON){
-		this->scene.SceneDelta.x = x-pressX;
-		this->scene.SceneDelta.z = y-pressY;
+		this->scene.CameraLocDelta.x = x-pressX;
+		this->scene.CameraLocDelta.z = y-pressY;
 	}
 	else if(pressState == GLUT_LEFT_BUTTON){
-		this->scene.SceneDelta.y = y-pressY;
+		this->scene.CameraLocDelta.y = y-pressY;
 	}
 
 

@@ -39,8 +39,11 @@ public:
 
 	 int Buttom;
 
+
 	 Vector3f SceneLocation;
 	 Vector3f SceneDelta;
+	 Vector3f CameraLocation;
+	 Vector3f CameraLocDelta;
 	 Vector3f RotateLocation;
 	 Vector3f RotateDelta;
 

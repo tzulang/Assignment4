@@ -31,7 +31,7 @@ GlobalMode GlobalState(scene);
 
 CameraMode CameraState(scene);
 
-State * Scanetate = &CameraState;
+State * ScaneState = &CameraState;
 
 vector<string> &split(const string &s, char delim, std::vector<string> &elems, bool ignoreEmpty) {
 
@@ -311,10 +311,27 @@ void mydisplay()
 
  
 	//glRotatef(0.1, 0, 1,0 ); //rotate scene
+
+
 	glLoadIdentity();
+	
+	gluLookAt(scene.CameraLocation.x + scene.CameraLocDelta.x,
+			scene.CameraLocation.y+ scene.CameraLocDelta.y,
+			scene.CameraLocation.z+ scene.CameraLocDelta.z,
+			scene.CameraLocation.x + scene.CameraLocDelta.x,
+			scene.CameraLocation.y+ scene.CameraLocDelta.y,
+			scene.CameraLocation.z+ scene.CameraLocDelta.z-300,
+			0,1,0);
+			
+
+
 	glTranslatef(scene.SceneLocation.x + scene.SceneDelta.x,
 				scene.SceneLocation.y+ scene.SceneDelta.y,
 				scene.SceneLocation.z+ scene.SceneDelta.z);
+	
+
+	
+
 
 	drawObj();
  
@@ -353,41 +370,37 @@ void mouseGlobal(int button, int state, int x, int y) {
 }
 
 void mouseMotion(int x, int y){
-	Scanetate->mouseMotion(x,y);
-	/*
-	float angelY =((W_HEIGHT-y)/W_HEIGHT)*180;
-	float angelX =((W_WIDTH-x)/W_WIDTH)*180;
-	*/
+	ScaneState->mouseMotion(x,y);
 
 }
 
 
 void mouse(int button, int state, int x, int y) 
 {
-	Scanetate->mouse(button, state, x, y);
-	/*
-	scene.Buttom = button;
-	scene.pressLocation.x = x;
-	scene.pressLocation.y = y;
-	*/
-	/*
-   switch (button) {
-	  case GLUT_LEFT_BUTTON:
-		  rot=0;
-		  break;
-	  case GLUT_RIGHT_BUTTON:
-		  if(rot==0)
-			  if(x>y)
-				rot=0.01;
-			  else rot=-0.01;
-		  else (rot+=rot);
-		  break;
-	  case GLUT_MIDDLE_BUTTON:
-		  break;
-   }
-   */
+	ScaneState->mouse(button, state, x, y);
+
 }
 
+void switchState(){
+	if(ScaneState == &CameraState){
+		ScaneState = &GlobalState;
+	}
+	else{
+		ScaneState = &CameraState;
+	}
+}
+
+void processNormalKeys(unsigned char key, int x, int y)
+{
+
+	if(key==' '){
+		switchState();
+	}
+}
+
+void processSpecialKeys(int key, int xx, int yy){
+
+}
 
 int main(int  argc, char** argv)
 {
@@ -400,10 +413,12 @@ int main(int  argc, char** argv)
 	 
 	init();
 	initLight();
-	ParseFile("simple.obj");
+	ParseFile("doll.obj");
 	glutDisplayFunc(mydisplay);
 	glutMouseFunc(mouse);
 	glutMotionFunc(mouseMotion);
+	glutKeyboardFunc(processNormalKeys);
+
 	glutTimerFunc(2, disp, 1);
 	
 	glutMainLoop();
