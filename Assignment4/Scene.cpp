@@ -1,7 +1,7 @@
 #include "Scene.h"
 
 
-Scene::Scene(void):SceneLocation(0,0,0),SceneDelta(0,0,0),CameraLocation(0,0,0),CameraLocDelta(0,0,0),RotateLocation(0,0,0),RotateDelta(0,0,0)
+Scene::Scene(void):SceneLocation(0,0,0),SceneDelta(0,0,0),CameraLocation(0,0,0),CameraLocDelta(0,0,0),SceneRotate(0,0,0),SceneRotDelta(0,0,0),CameraRotate(0,0,0),CameraRotDelta(0,0,0)
 {
 }
 

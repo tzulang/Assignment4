@@ -13,9 +13,7 @@
 #include "GlobalMode.h"
 #include "CameraMode.h"
 
-#define W_WIDTH 512
 
-#define W_HEIGHT 512
 
 
 
@@ -314,21 +312,39 @@ void mydisplay()
 
 
 	glLoadIdentity();
-	
+	/*
 	gluLookAt(scene.CameraLocation.x + scene.CameraLocDelta.x,
 			scene.CameraLocation.y+ scene.CameraLocDelta.y,
 			scene.CameraLocation.z+ scene.CameraLocDelta.z,
 			scene.CameraLocation.x + scene.CameraLocDelta.x,
 			scene.CameraLocation.y+ scene.CameraLocDelta.y,
 			scene.CameraLocation.z+ scene.CameraLocDelta.z-300,
-			0,1,0);
-			
+			0,1,0);*/
+	float Sx = scene.SceneLocation.x + scene.SceneDelta.x;
+	float Sy = scene.SceneLocation.y+ scene.SceneDelta.y;
+	float Sz = scene.SceneLocation.z+ scene.SceneDelta.z;
 
+	float Cx = scene.CameraLocation.x + scene.CameraLocDelta.x;
+	float Cy = scene.CameraLocation.y+ scene.CameraLocDelta.y;
+	float Cz = scene.CameraLocation.z+ scene.CameraLocDelta.z;
 
-	glTranslatef(scene.SceneLocation.x + scene.SceneDelta.x,
-				scene.SceneLocation.y+ scene.SceneDelta.y,
-				scene.SceneLocation.z+ scene.SceneDelta.z);
+	//Translate camera + scene
+	glTranslatef(scene.SceneLocation.x + scene.SceneDelta.x-(scene.CameraLocation.x + scene.CameraLocDelta.x),
+				scene.SceneLocation.y+ scene.SceneDelta.y-(scene.CameraLocation.y + scene.CameraLocDelta.y),
+				scene.SceneLocation.z+ scene.SceneDelta.z-(scene.CameraLocation.z + scene.CameraLocDelta.z));
 	
+
+	//Rotate Scene
+	glTranslatef(Sx,Sy,Sz);
+	glRotatef((scene.SceneRotate.x+scene.SceneRotDelta.x)*180,0,1,0);
+	glRotatef((scene.SceneRotate.y+scene.SceneRotDelta.y)*180,1,0,0);
+	
+	glTranslatef(-1*Sx,-1*Sy,-1*Sz);
+	//Rotate Camera
+	glTranslatef(Cx,Cy,Cz+150);
+	glRotatef((scene.CameraRotate.x+scene.CameraRotDelta.x)*180,0,1,0);
+	glRotatef((scene.CameraRotate.y+scene.CameraRotDelta.y)*180,1,0,0);
+	glTranslatef(-1*Cx,-1*Cy,-1*(Cz+150));
 
 	
 

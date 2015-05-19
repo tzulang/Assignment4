@@ -6,6 +6,10 @@
 
 using namespace std;
 
+#define W_WIDTH 512
+
+#define W_HEIGHT 512
+
 typedef struct Face{
 	GLuint vertice[3];
 	GLuint normal [3];
@@ -28,6 +32,13 @@ typedef struct object3D{
 	vector<Group*> *groups;
 };
 
+typedef struct Vector2f{ 
+	float x;
+	float y;
+
+	Vector2f(float xVal,float yVal){x = xVal; y = yVal;}
+};
+
 
 class Scene
 {
@@ -44,8 +55,10 @@ public:
 	 Vector3f SceneDelta;
 	 Vector3f CameraLocation;
 	 Vector3f CameraLocDelta;
-	 Vector3f RotateLocation;
-	 Vector3f RotateDelta;
+	 Vector3f SceneRotate;
+	 Vector3f SceneRotDelta;
+	 Vector3f CameraRotate;
+	 Vector3f CameraRotDelta;
 
 	Scene(void);
 	~Scene(void);

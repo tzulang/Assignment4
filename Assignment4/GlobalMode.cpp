@@ -9,29 +9,19 @@ static Vector3f zeroVec(0,0,0);
 
 
 void GlobalMode::mouse(int button, int state, int x, int y){
-	switch (button) {
-		case GLUT_RIGHT_BUTTON:
-		if(state ==GLUT_DOWN){
-			pressState = GLUT_RIGHT_BUTTON;
-			pressX =x;
-			pressY = y;
-			return;
-		}
-		break;
+	if(state ==GLUT_DOWN){
+		pressState = button;
+		pressX =x;
+		pressY = y;
 		
-		case GLUT_LEFT_BUTTON:
-			if(state ==GLUT_DOWN){
-				pressState = GLUT_LEFT_BUTTON;
-				pressX =x;
-				pressY = y;
-				return;
-			}
-
-			break;
 	}
-	this->scene.SceneLocation+= this->scene.SceneDelta;
+	else{
+		this->scene.SceneLocation+= this->scene.SceneDelta;
+		this->scene.SceneDelta = zeroVec;
+		this->scene.SceneRotate+= this->scene.SceneRotDelta;
+		this->scene.SceneRotDelta = zeroVec;
+	}
 
-	this->scene.SceneDelta = zeroVec;
 }
 void GlobalMode::mouseMotion(int x, int y){
 	if(pressState == GLUT_RIGHT_BUTTON){
@@ -40,6 +30,11 @@ void GlobalMode::mouseMotion(int x, int y){
 	}
 	else if(pressState == GLUT_LEFT_BUTTON){
 		this->scene.SceneDelta.y = y-pressY;
+	}
+	else if(pressState == GLUT_MIDDLE_BUTTON)
+	{
+		this->scene.SceneRotDelta.x = ((0.0+x-pressX)/W_WIDTH);
+		this->scene.SceneRotDelta.y = ((0.0+y-pressY)/W_HEIGHT);
 	}
 }
 
