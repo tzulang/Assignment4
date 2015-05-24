@@ -54,11 +54,18 @@ public:
 	 Vector3f SceneLocation;
 	 Vector3f SceneDelta;
 	 Vector3f CameraLocation;
+	 
 	 Vector3f CameraLocDelta;
 	 Vector3f SceneRotate;
 	 Vector3f SceneRotDelta;
 	 Vector3f CameraRotate;
 	 Vector3f CameraRotDelta;
+
+	 float fieldOfViewAngle;
+	 bool  fieldofViewChaned;
+
+	 float scaleFactor;
+	 bool scaleFactorChanged;
 
 	Scene(void);
 	~Scene(void);

@@ -15,21 +15,20 @@
 
 
 
-
-
-
-
 using namespace std;
 
+
+ const float LINEWIDTH=5;
+ const float DELTA_CHANGE_OF_VIEW = 0.05;
+ const float SCALE_FACTOR = 1.05;
  GLfloat rot;
  Scene scene;
 
 
 GlobalMode GlobalState(scene);
-
 CameraMode CameraState(scene);
-
 State * ScaneState = &CameraState;
+
 
 vector<string> &split(const string &s, char delim, std::vector<string> &elems, bool ignoreEmpty) {
 
@@ -152,8 +151,9 @@ void init()
 	glLoadIdentity();		//load Identity matrix
 	
 	//defines view mode
-	gluPerspective(60, 1, 2, 200);
-	glTranslatef(0, 0, -150);
+	scene.fieldOfViewAngle = 60;
+	gluPerspective(scene.fieldOfViewAngle, 1, 2, 200);
+	glTranslatef(0, 0, -100);
  
 	
 	glEnable(GL_DEPTH_TEST);  //define in which order the scene will built
@@ -165,6 +165,37 @@ void init()
 
 }
 
+
+/*
+*
+*	set 
+*
+*/
+inline void setProjectionMatrix(){
+
+	if (scene.fieldofViewChaned){
+
+		glMatrixMode(GL_PROJECTION); /* switch matrix mode */
+		glLoadIdentity();		//load Identity matrix
+		printf("fov angle: %f\n", scene.fieldOfViewAngle);
+		gluPerspective(scene.fieldOfViewAngle, 1, 2, 200);
+		glTranslatef(0, 0, -100);
+		glMatrixMode(GL_MODELVIEW);
+		scene.fieldofViewChaned = false;
+	}
+}
+
+inline void setScale(){
+
+	if (scene.scaleFactorChanged){
+
+		glMatrixMode(GL_MODELVIEW); /* switch matrix mode */
+		printf("scale factor: %f\n", scene.scaleFactor);		 
+		glScalef(scene.scaleFactor, scene.scaleFactor, scene.scaleFactor);
+		scene.scaleFactor = 1;
+		scene.scaleFactorChanged = false;
+	}
+}
 
 void initLight()
 {
@@ -180,11 +211,11 @@ void initLight()
 	glColorMaterial(GL_BACK, GL_AMBIENT_AND_DIFFUSE);
 
 	//GLfloat emission[] = { 0, 0, 0.2 };
-	GLfloat light_direction[] = { 0.0, -0.0, -1.0, 1.0 };
+	//GLfloat light_direction[] = { 0.0, -0.0, -1.0, 1.0 };
 	GLfloat light_ambient[] =	{ 0.5,  0.5,  0.5, 1.0 }; //color
 	GLfloat light_diffuse[] =	{ 0.0,  0.5,  0.5, 1.0 }; //color
 	GLfloat light_specular[] =	{ 0.0,  0.0,  0.5, 1.0 };
-	GLfloat light_position[] =	{ -0.0,  -1, -1, 0, 0.0 };
+	GLfloat light_position[] =	{ 0.0, -1.0, -1.0, 0.0 };
 	//GLfloat angle[] = { 20.0 };
 
 
@@ -246,7 +277,6 @@ void initLight()
 }
 
 
-
 void printProj() //prints projection matrix
 {
 	float  projectionMatrix[16];
@@ -258,6 +288,28 @@ void printProj() //prints projection matrix
 			printf("%f ", projectionMatrix[j * 4 + i]);
 		printf("\n");
 	}
+}
+
+
+void drawAxisLines(){
+
+	glLineWidth(LINEWIDTH);
+	
+	glBegin(GL_LINES);
+	glColor3f(1.0, 0.0, 0.0);
+	glVertex3f(0.0, 0.0, 0.0);
+	glVertex3f(100.0, 0.0, 0.0);
+
+	glColor3f(0.0, 1.0, 0.0);
+	glVertex3f(0.0, 0.0, 0.0);
+	glVertex3f(0.0, 110.0, 0.0);
+
+	glColor3f(0.0, 0.0, 100.0);
+	glVertex3f(0.0, 0.0, 0.0);
+	glVertex3f(0.0, 0.0, 100.0);
+
+
+	glEnd();
 }
 
 void drawObj(){
@@ -310,8 +362,9 @@ void mydisplay()
  
 	//glRotatef(0.1, 0, 1,0 ); //rotate scene
 
-
-	glLoadIdentity();
+	setProjectionMatrix();
+	setScale();
+	//glLoadIdentity();
 	/*
 	gluLookAt(scene.CameraLocation.x + scene.CameraLocDelta.x,
 			scene.CameraLocation.y+ scene.CameraLocDelta.y,
@@ -346,11 +399,8 @@ void mydisplay()
 	glRotatef((scene.CameraRotate.y+scene.CameraRotDelta.y)*180,1,0,0);
 	glTranslatef(-1*Cx,-1*Cy,-1*(Cz+150));
 
-	
-
-
 	drawObj();
- 
+//	drawAxisLines();
 
 	glutSwapBuffers();
 
@@ -386,6 +436,7 @@ void mouseGlobal(int button, int state, int x, int y) {
 }
 
 void mouseMotion(int x, int y){
+
 	ScaneState->mouseMotion(x,y);
 
 }
@@ -408,14 +459,56 @@ void switchState(){
 
 void processNormalKeys(unsigned char key, int x, int y)
 {
-
-	if(key==' '){
+	switch (key) {
+	case ' ':
 		switchState();
+		break;
+
+	
 	}
 }
 
 void processSpecialKeys(int key, int xx, int yy){
+	switch (key) {
+	 
+		 
 
+	case GLUT_KEY_F2:
+	 
+		if (scene.fieldOfViewAngle < 180){
+
+
+			scene.fieldOfViewAngle += DELTA_CHANGE_OF_VIEW;
+			scene.fieldofViewChaned = true;
+		}
+		//printf("scene.fieldOfViewAngle: %f \n", scene.fieldOfViewAngle);
+		break;
+
+	case GLUT_KEY_F3:
+	 
+
+		if (scene.fieldOfViewAngle > 0){
+
+
+			scene.fieldOfViewAngle -= DELTA_CHANGE_OF_VIEW;
+			scene.fieldofViewChaned = true;
+
+		}
+		//printf("scene.fieldOfViewAngle: %f \n", scene.fieldOfViewAngle);
+		break;
+	case GLUT_KEY_UP:
+	 
+
+		scene.scaleFactor = SCALE_FACTOR;
+		scene.scaleFactorChanged = true;
+		break;
+	case GLUT_KEY_DOWN:
+	 
+
+		scene.scaleFactor = 1 / SCALE_FACTOR;
+		scene.scaleFactorChanged = true;
+		break;
+	}
 }
 
 int main(int  argc, char** argv)
@@ -429,12 +522,12 @@ int main(int  argc, char** argv)
 	 
 	init();
 	initLight();
-	ParseFile("doll.obj");
+	ParseFile("simple.obj");
 	glutDisplayFunc(mydisplay);
 	glutMouseFunc(mouse);
 	glutMotionFunc(mouseMotion);
 	glutKeyboardFunc(processNormalKeys);
-
+	glutSpecialFunc(processSpecialKeys);
 	glutTimerFunc(2, disp, 1);
 	
 	glutMainLoop();
