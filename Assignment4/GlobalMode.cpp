@@ -25,13 +25,13 @@ void GlobalMode::mouse(int button, int state, int x, int y){
 }
 void GlobalMode::mouseMotion(int x, int y){
 	if(pressState == GLUT_RIGHT_BUTTON){
-		this->scene.SceneDelta.x += x-pressX;
-		this->scene.SceneDelta.y -= y-pressY;
+		this->scene.SceneDelta.x += ((0.0+x-pressX)/W_WIDTH)*50;
+		this->scene.SceneDelta.y -= ((0.0+y-pressY)/W_HEIGHT)*50;
 		pressX = x;
 		pressY = y;
 	}
 	else if(pressState == GLUT_MIDDLE_BUTTON){
-		this->scene.SceneDelta.z += y-pressY;
+		this->scene.SceneDelta.z += ((0.0+y-pressY)/W_HEIGHT)*50;
 		pressX = x;
 		pressY = y;
 	}
