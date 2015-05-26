@@ -11,8 +11,8 @@ using namespace std;
 #define W_HEIGHT 512
 
 typedef struct Face{
-	GLuint vertice[3];
-	GLuint normal [3];
+	vector<int>  *vertice;
+	vector<int>  *normal;
 };
 
 typedef struct Group{

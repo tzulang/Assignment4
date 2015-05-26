@@ -30,7 +30,14 @@ GlobalMode GlobalState(scene);
 CameraMode CameraState(scene);
 State * ScaneState = &CameraState;
 
+/*
+	splits the string by a given delimiter charachter 
 
+	s- the string to split
+	delim- the delimiter charachter
+	elems - the output vector of the splited strings
+	ignoreEmpty - if true ,dont push empty parsed elements
+*/
 vector<string> &split(const string &s, char delim, std::vector<string> &elems, bool ignoreEmpty) {
 
 	stringstream ss(s);
@@ -46,12 +53,22 @@ vector<string> &split(const string &s, char delim, std::vector<string> &elems, b
 }
 
 
-
+/*
+	parse a vector given a splited line string 
+	Assuming the first element of the vector is the identifier char ( i.e v , vn .etc)
+*/
 inline Vector3f parseVec(vector<string> &params){
 
 	return Vector3f(stof(params[1]), stof(params[2]), stof(params[3]));
 	 
 }
+
+
+
+/*
+parse a face given a splited line string
+Assuming the first element of the vector is the identifier char ( i.e f)
+*/
 
 inline Face parsFace(vector<string> &params){
 
@@ -73,6 +90,13 @@ inline Face parsFace(vector<string> &params){
 	}
 	return face;
 }
+
+
+
+/*
+parse an obj file given a string filename
+exits on error
+*/
 
 void ParseFile(string fileName){
 
@@ -143,6 +167,10 @@ void ParseFile(string fileName){
 
 }
 
+
+/*
+	inits the buffers, modelview and projection matrices
+*/
 void init()
 {
  
@@ -160,7 +188,7 @@ void init()
  
 	
 	glEnable(GL_DEPTH_TEST);  //define in which order the scene will built
-	//glEnable(GL_NORMALIZE);
+	 
 
 	/* return to modelview mode */
 	glMatrixMode(GL_MODELVIEW);
@@ -171,7 +199,7 @@ void init()
 
 /*
 *
-*	set 
+*	set  the projection matrix field of view
 *
 */
 inline void setProjectionMatrix(){
@@ -188,6 +216,10 @@ inline void setProjectionMatrix(){
 	}
 }
 
+
+/*
+	set scale to the current matrix
+*/
 inline void setScale(){
 
  
@@ -196,6 +228,9 @@ inline void setScale(){
 }
 
 
+/*
+	moves camera 
+*/
 inline void moveCamera(){
 	if (scene.CameraLocDelta.x!=0||scene.CameraLocDelta.y!=0||scene.CameraLocDelta.z!=0){
 		glm::vec4 forward(0.0,0.0,-1.0,0.0);
@@ -215,6 +250,10 @@ inline void moveCamera(){
 
 }
 
+
+/*
+rotates the camera
+*/
 inline void rotateCamera(){
 	if (scene.CameraRotDelta.x!=0||scene.CameraRotDelta.y!=0){
 		glm::vec4 sceneOrgLoc(0.0,0.0,-100.0,1.0);
@@ -240,6 +279,9 @@ inline void rotateCamera(){
 		scene.CameraRotDelta.y = 0;
 	}
 }
+/*
+rotate the scene 
+*/
 
 inline void rotateScene(){
 	if (scene.SceneRotDelta.x!=0||scene.SceneRotDelta.y!=0){
@@ -263,6 +305,11 @@ inline void rotateScene(){
 	}
 }
 
+
+
+
+
+
 inline void moveScene(){
 
 	if (scene.SceneDelta.x!=0||scene.SceneDelta.y!=0||scene.SceneDelta.z!=0){
@@ -280,29 +327,23 @@ void initLight()
 	//glEnable(GL_COLOR_MATERIAL);
 	
 	glShadeModel(GL_SMOOTH);
-//	glEnable(GL_LIGHTING);
+ 
 	glEnable(GL_LIGHT0);
 	glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE);
 	glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
 	glColorMaterial(GL_BACK, GL_AMBIENT_AND_DIFFUSE);
-
-	//GLfloat emission[] = { 0, 0, 0.2 };
-	//GLfloat light_direction[] = { 0.0, -0.0, -1.0, 1.0 };
+ 
 	GLfloat light_ambient[] =	{ 0.5,  0.5,  0.5, 1.0 }; //color
 	GLfloat light_diffuse[] =	{ 0.0,  0.5,  0.5, 1.0 }; //color
 	GLfloat light_specular[] =	{ 0.0,  0.0,  0.5, 1.0 };
 	GLfloat light_position[] =	{ 0.0, -1.0, -1.0, 0.0 };
-	//GLfloat angle[] = { 20.0 };
-
+	 
 
 	glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
 	glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular);
 	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
-
-//	glLightfv(GL_LIGHT0, GL_SPOT_DIRECTION, light_direction);
-//	glLightfv(GL_LIGHT0, GL_SPOT_CUTOFF,angle);
-
+ 
 	
 	
 
@@ -316,56 +357,12 @@ void initLight()
 	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, mat_s);
 	glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, low_sh);
 
-	//	glEnable(GL_COLOR_MATERIAL);
-	//glDisable(GL_LIGHTING);
 
-	//GLfloat emission[] = { 0, 0, 0.2 };
-	//GLfloat light_direction[] = { 0, 0.0, -1, 1.0 };
-	//GLfloat light_ambient[] = { 0.1, 0.1, 0.1, 1.0 }; //color
-	//GLfloat light_diffuse[] = { 0.1, 0.7, 0.7, 1.0 }; //color
-	//GLfloat light_specular[] = { 0.3, 0.3, 0.3, 1.0 };
-	//GLfloat light_position[] = { -0.0, -1.5, 1, 0, 0.0 };
-	//GLfloat angle[] = { 20.0 };
-
-	//glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
-	//glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
-	//glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular);
-	//glLightfv(GL_LIGHT0, GL_POSITION, light_position);
-
-	////glLightfv(GL_LIGHT0, GL_SPOT_DIRECTION, light_direction);
-	////glLightfv(GL_LIGHT0, GL_SPOT_CUTOFF,angle);
-
-	//glShadeModel(GL_FLAT);
-	//glEnable(GL_LIGHTING);
-	//glEnable(GL_LIGHT0);
-	//glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE);
-	//glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
-	//GLfloat mat_a[] = { 0.1, 0.5, 0.5, 1.0 };
-	//GLfloat mat_d[] = { 0.1, 0.7, 0.7, 1.0 };
-	//GLfloat mat_s[] = { 0.0, 0.0, 0.9, 1.0 };
-	//GLfloat low_sh[] = { 5.0 };
-
-	//glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, mat_a);
-	//glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, mat_d);
-	//glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, mat_s);
-	//glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, low_sh);
 
 }
 
 
-void printProj() //prints projection matrix
-{
-	float  projectionMatrix[16];
-	glGetFloatv(GL_PROJECTION_MATRIX, projectionMatrix);
-	printf("projection matrix: \n");
-	for (int i = 0; i<4; i++)
-	{
-		for (int j = 0; j<4; j++)
-			printf("%f ", projectionMatrix[j * 4 + i]);
-		printf("\n");
-	}
-}
-
+ 
 
 void drawAxisLines(){
 
@@ -422,13 +419,11 @@ void drawObj(){
 				glEnd();
 			}
 			
-		//	glPopMatrix();
+	
 		}
 
 	}
-//	glEnable(GL_LIGHTING);
-//	glDisable(GL_COLOR_MATERIAL); 
-//	glFlush();
+
 }
 
 void mydisplay()
@@ -445,42 +440,7 @@ void mydisplay()
 	moveCamera();
 	rotateScene();
 	rotateCamera();
-	//glLoadIdentity();
-	/*
-	gluLookAt(scene.CameraLocation.x + scene.CameraLocDelta.x,
-			scene.CameraLocation.y+ scene.CameraLocDelta.y,
-			scene.CameraLocation.z+ scene.CameraLocDelta.z,
-			scene.CameraLocation.x + scene.CameraLocDelta.x,
-			scene.CameraLocation.y+ scene.CameraLocDelta.y,
-			scene.CameraLocation.z+ scene.CameraLocDelta.z-300,
-			0,1,0);*/
-	float Sx = scene.SceneLocation.x + scene.SceneDelta.x;
-	float Sy = scene.SceneLocation.y+ scene.SceneDelta.y;
-	float Sz = scene.SceneLocation.z+ scene.SceneDelta.z;
-
-	float Cx = scene.CameraLocation.x + scene.CameraLocDelta.x;
-	float Cy = scene.CameraLocation.y+ scene.CameraLocDelta.y;
-	float Cz = scene.CameraLocation.z+ scene.CameraLocDelta.z;
-	/*
-	//Translate camera + scene
-	glTranslatef(scene.SceneLocation.x + scene.SceneDelta.x-(scene.CameraLocation.x + scene.CameraLocDelta.x),
-				scene.SceneLocation.y+ scene.SceneDelta.y-(scene.CameraLocation.y + scene.CameraLocDelta.y),
-				scene.SceneLocation.z+ scene.SceneDelta.z-(scene.CameraLocation.z + scene.CameraLocDelta.z));
-	
-
-	//Rotate Scene
-	glTranslatef(Sx,Sy,Sz);
-	glRotatef((scene.SceneRotate.x+scene.SceneRotDelta.x)*180,0,1,0);
-	glRotatef((scene.SceneRotate.y+scene.SceneRotDelta.y)*180,1,0,0);
-	
-	glTranslatef(-1*Sx,-1*Sy,-1*Sz);
-	//Rotate Camera
-	glTranslatef(Cx,Cy,Cz+150);
-	glRotatef((scene.CameraRotate.x+scene.CameraRotDelta.x)*180,0,1,0);
-	glRotatef((scene.CameraRotate.y+scene.CameraRotDelta.y)*180,1,0,0);
-	glTranslatef(-1*Cx,-1*Cy,-1*(Cz+150));
-	*/
-
+	 
 
 
 	glEnable(GL_LIGHTING);
@@ -590,7 +550,7 @@ void processSpecialKeys(int key, int xx, int yy){
 			scene.fieldOfViewAngle += DELTA_CHANGE_OF_VIEW;
 			scene.fieldofViewChaned = true;
 		}
-		//printf("scene.fieldOfViewAngle: %f \n", scene.fieldOfViewAngle);
+		 
 		break;
 
 	case GLUT_KEY_F3:
@@ -603,7 +563,7 @@ void processSpecialKeys(int key, int xx, int yy){
 			scene.fieldofViewChaned = true;
 
 		}
-		//printf("scene.fieldOfViewAngle: %f \n", scene.fieldOfViewAngle);
+	 
 		break;
 	case GLUT_KEY_UP:
 	
