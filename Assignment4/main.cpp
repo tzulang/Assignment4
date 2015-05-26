@@ -19,7 +19,7 @@ using namespace std;
 
 static Vector3f zeroVec(0,0,0);
 
- const float LINEWIDTH=5;
+ const float LINEWIDTH=1;
  const float DELTA_CHANGE_OF_VIEW = 0.05;
  const float SCALE_FACTOR = 1.05;
  GLfloat rot;
@@ -188,14 +188,14 @@ inline void setProjectionMatrix(){
 
 inline void setScale(){
 
-	if (scene.scaleFactorChanged){
+	//if (scene.scaleFactorChanged){
 
-		glMatrixMode(GL_MODELVIEW); /* switch matrix mode */
+		//glMatrixMode(GL_MODELVIEW); /* switch matrix mode */
 		printf("scale factor: %f\n", scene.scaleFactor);		 
 		glScalef(scene.scaleFactor, scene.scaleFactor, scene.scaleFactor);
-		scene.scaleFactor = 1;
+		//scene.scaleFactor = 1;
 		scene.scaleFactorChanged = false;
-	}
+//	}
 }
 
 
@@ -283,7 +283,7 @@ void initLight()
 	//glEnable(GL_COLOR_MATERIAL);
 	
 	glShadeModel(GL_SMOOTH);
-	glEnable(GL_LIGHTING);
+//	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
 	glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE);
 	glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
@@ -430,7 +430,7 @@ void drawObj(){
 	}
 //	glEnable(GL_LIGHTING);
 //	glDisable(GL_COLOR_MATERIAL); 
-	//glFlush();
+//	glFlush();
 }
 
 void mydisplay()
@@ -442,7 +442,7 @@ void mydisplay()
 	//glRotatef(0.1, 0, 1,0 ); //rotate scene
 
 	setProjectionMatrix();
-	setScale();
+
 	moveScene();
 	moveCamera();
 	rotateScene();
@@ -482,11 +482,20 @@ void mydisplay()
 	glRotatef((scene.CameraRotate.y+scene.CameraRotDelta.y)*180,1,0,0);
 	glTranslatef(-1*Cx,-1*Cy,-1*(Cz+150));
 	*/
+
+
+
+	glEnable(GL_LIGHTING);
+	glPushMatrix();
+	setScale();
 	drawObj();
-//	drawAxisLines();
+	glPopMatrix();
+	glDisable(GL_LIGHTING);
+
+	drawAxisLines();
 
 	glutSwapBuffers();
-
+	
 
 }
 
@@ -531,6 +540,22 @@ void mouse(int button, int state, int x, int y)
 
 }
 
+
+void resetAllMatrices(){
+
+	glMatrixMode(GL_PROJECTION); /* switch matrix mode */
+	glLoadIdentity();		//load Identity matrix
+
+	//defines view mode
+	scene.fieldOfViewAngle = 60;
+	gluPerspective(scene.fieldOfViewAngle, 1, 2, 200);
+	glTranslatef(0, 0, -100);
+
+	/* return to modelview mode */
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	scene.scaleFactor = 1;
+}
 void switchState(){
 	if(ScaneState == &CameraState){
 		ScaneState = &GlobalState;
@@ -545,6 +570,9 @@ void processNormalKeys(unsigned char key, int x, int y)
 	switch (key) {
 	case ' ':
 		switchState();
+		break;
+	case 'r':
+		resetAllMatrices();
 		break;
 
 	
@@ -582,13 +610,13 @@ void processSpecialKeys(int key, int xx, int yy){
 	case GLUT_KEY_UP:
 	 
 
-		scene.scaleFactor = SCALE_FACTOR;
+		scene.scaleFactor*= SCALE_FACTOR;
 		scene.scaleFactorChanged = true;
 		break;
 	case GLUT_KEY_DOWN:
 	 
 
-		scene.scaleFactor = 1 / SCALE_FACTOR;
+		scene.scaleFactor/=  SCALE_FACTOR;
 		scene.scaleFactorChanged = true;
 		break;
 	}
