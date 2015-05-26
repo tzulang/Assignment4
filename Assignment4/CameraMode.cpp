@@ -26,13 +26,13 @@ void CameraMode::mouse(int button, int state, int x, int y){
 }
 void CameraMode::mouseMotion(int x, int y){
 	if(pressState == GLUT_RIGHT_BUTTON){
-		this->scene.CameraLocDelta.x += x-pressX;
-		this->scene.CameraLocDelta.y -= y-pressY;
+		this->scene.CameraLocDelta.x -= ((0.0+x-pressX)/W_WIDTH)*50;
+		this->scene.CameraLocDelta.y += ((0.0+y-pressY)/W_HEIGHT)*50;
 		pressX = x;
 		pressY = y;
 	}
 	else if(pressState == GLUT_MIDDLE_BUTTON){
-		this->scene.CameraLocDelta.z += y-pressY;
+		this->scene.CameraLocDelta.z += ((0.0+y-pressY)/W_HEIGHT)*50;
 		pressX = x;
 		pressY = y;
 	}

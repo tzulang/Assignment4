@@ -57,7 +57,9 @@ inline Face parsFace(vector<string> &params){
 
 
 	Face face;
-	for (int i = 0; i < 3; i++){
+	face.normal = new vector<int>();
+	face.vertice = new vector<int>();
+	for (int i = 0; i < params.size()-1; i++){
 			
 		int index = params[i + 1].find('/');
 		if (index < 0)
@@ -65,8 +67,8 @@ inline Face parsFace(vector<string> &params){
 		
 		 
 		
-		face.vertice[i]  = stoi(params[i + 1].substr(0, index));
-		face.normal[i]	 = stoi(params[i + 1].substr(index + 2));
+		face.vertice->push_back( stoi(params[i + 1].substr(0, index)));
+		face.normal->push_back( stoi(params[i + 1].substr(index + 2)));
 
 	}
 	return face;
@@ -188,14 +190,9 @@ inline void setProjectionMatrix(){
 
 inline void setScale(){
 
-	//if (scene.scaleFactorChanged){
-
-		//glMatrixMode(GL_MODELVIEW); /* switch matrix mode */
-		printf("scale factor: %f\n", scene.scaleFactor);		 
+ 
 		glScalef(scene.scaleFactor, scene.scaleFactor, scene.scaleFactor);
-		//scene.scaleFactor = 1;
-		scene.scaleFactorChanged = false;
-//	}
+  
 }
 
 
@@ -406,15 +403,15 @@ void drawObj(){
 			vector<Face> *faces = scene.objects[o]->groups->at(g)->faces;
 			int facesNum = faces->size();		
 			//glPushMatrix();
-			glBegin(GL_TRIANGLES);
+
 			//glColor3f(0.3f, 0.5f, 0.13f);
 			for (int f=0; f < facesNum; f++){
 				
 				Face *face = &faces->at(f);
-				
-				for (int i = 0; i < 3; i++){
-					int n = face->normal[i]-1;
-					int v = face->vertice[i]-1;
+				glBegin(GL_POLYGON);
+				for (int i = 0; i < face->normal->size(); i++){
+					int n = face->normal->at(i)-1;
+					int v = face->vertice->at(i)-1;
 					float f = float(i) / facesNum;
 					//glColor3f(f, f*2, f);
 					Vector3f nn= scene.normals[n];
@@ -422,8 +419,9 @@ void drawObj(){
 					glNormal3f(scene.normals[n].x, scene.normals[n].y, scene.normals[n].z);
 					glVertex3f(scene.vertices[v].x, scene.vertices[v].y, scene.vertices[v].z);
 				}
+				glEnd();
 			}
-			glEnd();
+			
 		//	glPopMatrix();
 		}
 
@@ -608,16 +606,16 @@ void processSpecialKeys(int key, int xx, int yy){
 		//printf("scene.fieldOfViewAngle: %f \n", scene.fieldOfViewAngle);
 		break;
 	case GLUT_KEY_UP:
-	 
-
+	
 		scene.scaleFactor*= SCALE_FACTOR;
-		scene.scaleFactorChanged = true;
+		printf("scale factor: %f\n", scene.scaleFactor);
 		break;
 	case GLUT_KEY_DOWN:
 	 
+		
 
 		scene.scaleFactor/=  SCALE_FACTOR;
-		scene.scaleFactorChanged = true;
+		printf("scale factor: %f\n", scene.scaleFactor);
 		break;
 	}
 }
